@@ -20,10 +20,11 @@ typedef struct rand_pool_info2 {
 
 // Inputs: rp = random pool to initialize, fd = file to read randomness from
 void init_rand_pool_info(randpool* rp, int fd) {
-	rp->entropy_count = BUFSIZE*79/10; // I'm underestimating this on purpose.
+	rp->entropy_count = BUFSIZE*785/100; // I'm underestimating this on purpose.
 	rp->buf_size = BUFSIZE;
 	unsigned char randbyte[1];
 	int n;
+	// Populate the buffer
 	for (int i=0; i<BUFSIZE; i++) {
 		n = read(fd, randbyte, 1);
 		rp->buf[i] = randbyte[0];
@@ -39,14 +40,15 @@ void init_rand_pool_info(randpool* rp, int fd) {
 }
 
 int main() {
-	int sfd = serialport_init_rdonly(FILENAME, 9600); // Serial file descriptor
+	int sfd = serialport_init_rdonly(FILENAME, 38400); // Serial file descriptor
 	int rfd = open("/dev/random", O_WRONLY); // Random file descriptor
 	if (sfd < 0 || rfd < 0) {
 		printf("Could not open sfd or rfd. Is your device availiable at %s?\n", FILENAME);
 		return 1;
 	}
+	// Allocate a random pool struct, repeatedly populate it, and add entropy.
 	randpool* randomness = malloc(sizeof(randpool));
-	for (int i=0; i<8; i++) {
+	while (1) {
 		init_rand_pool_info(randomness, sfd);
 		if (ioctl(rfd, RNDADDENTROPY, randomness) < 0) {
 			puts("Could not add entropy. Are you root?");
@@ -54,6 +56,7 @@ int main() {
 		} else {
 			printf("Adding %d bytes to entropy pool for a total of %d bits of entropy\n", randomness->buf_size, randomness->entropy_count);
 		}
+		usleep(100000);
 	}
 	serialport_close(sfd);
 	close(rfd);
