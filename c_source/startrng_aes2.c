@@ -14,7 +14,7 @@
 
 #include "arduino-serial/arduino-serial-lib.h"
 #define INPUTINT 256
-#define SHAINPUTSIZE 64
+#define SHAINPUTSIZE 128
 
 const char * FILENAME = "/dev/ttyACM0"; // File of Arduino random number generator
 typedef unsigned char uchar;
@@ -28,11 +28,18 @@ typedef struct rand_pool_info2 {
 } randpool;
 
 // Get sha256 hash of input and put into output
-void sha256(uchar input[SHAINPUTSIZE], uchar output[32]) {
+void sha256(uchar* input, uchar output[32], int inputlen) {
 	SHA256_CTX shactx;
 	SHA256_Init(&shactx);
-	SHA256_Update(&shactx, input, SHAINPUTSIZE);
+	SHA256_Update(&shactx, input, inputlen);
 	SHA256_Final(output, &shactx);
+}
+// Get sha512 hash of input and put into output
+void sha512(uchar* input, uchar output[64], int inputlen) {
+	SHA512_CTX shactx;
+	SHA512_Init(&shactx);
+	SHA512_Update(&shactx, input, inputlen);
+	SHA512_Final(output, &shactx);
 }
 
 // Get numbytes from fd and put into output
@@ -75,24 +82,30 @@ void init_rand_pool_info(randpool* rp, int fd) {
 	rp->buf_size = BUFSIZE;
 	// Allocate vars
 	uchar shabytes[SHAINPUTSIZE];
-	uchar aeskey[32];
-	uchar aesiv[32];
-	uchar aesrawbytes[INPUTINT];
-	uchar aesencbytes[INPUTINT+64];
+	uchar *aeskey = malloc(64); // Aesiv is basically a pointer to the halfway point of aeskey
+	uchar *aesiv = aeskey+32;
+	uchar *aesrawbytes = malloc(INPUTINT);
+	uchar *aesencbytes = malloc(INPUTINT+16);
+	uchar *aesencbytes2 = malloc(INPUTINT);
+	uchar *aestagandlastblock = aesencbytes+INPUTINT-16; // Tag and last block for aesencbytes
 	int ciphertext_len;
 	// Populate the buffer
 	for (int x=0; x<BUFSIZE/INPUTINT; x++) {
 		// Get AES key and IV
 		getnumbytes(fd, SHAINPUTSIZE, shabytes);
-		sha256(shabytes, aeskey);
-		getnumbytes(fd, SHAINPUTSIZE, shabytes);
-		sha256(shabytes, aesiv);
+		sha512(shabytes, aeskey, SHAINPUTSIZE);
 		// Get AES bytes and encrypt
 		getnumbytes(fd, INPUTINT, aesrawbytes);
 		ciphertext_len = encrypt(aesrawbytes, INPUTINT, aeskey, aesiv, aesencbytes);
+		// Get AES key and IV for second encryption
+		for (int i=0; i<32; i++) {
+			aesiv[i] = aestagandlastblock[i]; // Get the aes iv from the aes tag and last block
+		}
+		sha256(aesiv, aeskey, 32); // SHA256 hash the AES IV for the AES key
+		ciphertext_len = encrypt(aesencbytes, INPUTINT-16, aeskey, aesiv, aesencbytes2); // Encrypt using AES a second time
 		// Put encrypted bytes to buf
 		for (int i=0; i<INPUTINT; i++) {
-			rp->buf[x*INPUTINT + i] = aesencbytes[i];
+			rp->buf[x*INPUTINT + i] = aesencbytes2[i];
 		}
 	}
 }
