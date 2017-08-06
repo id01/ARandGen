@@ -5,36 +5,57 @@
 #include <sys/fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/random.h>
+#include <openssl/sha.h>
 
 #include "arduino-serial/arduino-serial-lib.h"
+#define INPUTINT 128
 
 const char * FILENAME = "/dev/ttyACM0"; // File of Arduino random number generator
+typedef unsigned char uchar;
 
 // Create random pool struct
 #define BUFSIZE 1024
 typedef struct rand_pool_info2 {
 	int entropy_count;
 	int buf_size;
-	unsigned char buf[BUFSIZE];
+	uchar buf[BUFSIZE];
 } randpool;
+
+void sha512(uchar *input, uchar output[65]) {
+	SHA512_CTX shactx;
+	SHA512_Init(&shactx);
+	SHA512_Update(&shactx, input, INPUTINT);
+	SHA512_Final(output, &shactx);
+	output[64] = 0;
+}
 
 // Inputs: rp = random pool to initialize, fd = file to read randomness from
 void init_rand_pool_info(randpool* rp, int fd) {
-	rp->entropy_count = BUFSIZE*785/100; // I'm underestimating this on purpose.
+	rp->entropy_count = BUFSIZE*7; // I'm underestimating this on purpose.
 	rp->buf_size = BUFSIZE;
-	unsigned char randbyte[1];
+	uchar randbyte[1];
+	uchar tohash[INPUTINT];
+	uchar hashout[65];
 	int n;
 	// Populate the buffer
-	for (int i=0; i<BUFSIZE; i++) {
-		n = read(fd, randbyte, 1);
-		rp->buf[i] = randbyte[0];
-		if (n==-1) {
-			rp->entropy_count = 0;
-			rp->buf_size = 0;
-			return;
+	for (int x=0; x<BUFSIZE/64; x++) {
+		// Populate tohash
+		for (int i=0; i<INPUTINT; i++) {
+			n = read(fd, randbyte, 1);
+			tohash[i] = randbyte[0];
+			if (n==-1) {
+				rp->entropy_count = 0;
+				rp->buf_size = 0;
+				return;
+			}
+			else if (n==0) {
+				usleep(1000);
+			}
 		}
-		else if (n==0) {
-			usleep(1000);
+		// Create hash and copy it over to the buffer
+		sha512(tohash, hashout);
+		for (int i=0; i<64; i++) {
+			rp->buf[x*64+i] = hashout[i];
 		}
 	}
 }

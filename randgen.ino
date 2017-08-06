@@ -2,7 +2,7 @@ typedef unsigned short randomtype; // Data type of random data. Larger is faster
 int ppins = 6; // Number of physical analog pins
 randomtype randBits; // Current random bits
 randomtype rTotal; // Totals of random bits.
-int ITERS = 11; // Number of iterations of XORing
+int ITERS = 17; // Number of iterations of XORing
 int BYTESPERWRITE; // Bytes per write
 int BITSPERWRITE; // Bits per write
 byte BITSHIFT = 3; // Number of bits to shift per iteration
