@@ -35,24 +35,6 @@ void sha256(uchar input[SHAINPUTSIZE], uchar output[32]) {
 	SHA256_Final(output, &shactx);
 }
 
-// Get numbytes from fd and put into output
-void getnumbytes(int fd, int numbytes, char* output) {
-	int n;
-	uchar randbyte[1];
-	for (int i=0; i<numbytes; i++) {
-		n = read(fd, randbyte, 1);
-		if (n == 0) {
-			usleep(1000);
-			i--;
-		} else if (n == -1) {
-			printf("ERROR!\n");
-			return;
-		} else {
-			output[i] = randbyte[0];
-		}
-	}
-}
-
 // Encrypt using AES
 int encrypt(unsigned char *plaintext, int plaintext_len, uchar *key, uchar *iv, uchar *ciphertext) {
 	int len=0;

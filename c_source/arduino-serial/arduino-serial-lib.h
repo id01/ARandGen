@@ -89,3 +89,21 @@ int serialport_flush(int fd)
     sleep(2); //required to make flush work, for some reason
     return tcflush(fd, TCIOFLUSH);
 }
+
+// Get numbytes from fd and put into output.
+void getnumbytes(int fd, int numbytes, unsigned char* output) {
+	int n;
+	unsigned char randbyte[1];
+	for (int i=0; i<numbytes; i++) {
+		n = read(fd, randbyte, 1);
+		if (n == 0) {
+			usleep(1000);
+			i--;
+		} else if (n == -1) {
+			printf("ERROR!\n");
+			return;
+		} else {
+			output[i] = randbyte[0];
+		}
+	}
+}

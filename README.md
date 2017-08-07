@@ -11,10 +11,10 @@ Configure files in c_source by changing FILENAME variable.
 Run make (mode)  
 ```
 make # Default  
-make aes2 # Double-AES (Default). Encrypts the data using two layers of AES for additional entropy.  
-make aes2-long # Double-AES-Long. Encrypts the data using two layers of AES in 2048 byte chunks.  
+make aes2 # Double-AES (Default). Encrypts the data using two layers of AES for additional entropy. Fast and secure.  
+make aes2-long # Double-AES-Long. Encrypts the data using two layers of AES in 2048 byte chunks. Fastest.  
 make aes # Single-AES. Encrypts the data using one layer of AES for additional entropy. Fast, but primitive.  
-make sha # SHA-512. Hashes the data with SHA512, halving the length, but increasing entropy.  
+make sha # SHA-512. Hashes the data with SHA512, halving the length, but increasing entropy. Slowest.  
 ```
 Run ./demo for demo  
 Run sudo ./startrng to add device to entropy pool.  
