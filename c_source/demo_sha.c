@@ -13,12 +13,11 @@
 const char * FILENAME = "/dev/ttyACM0"; // File of Arduino random number generator
 typedef unsigned char uchar;
 
-void sha512(uchar *input, uchar output[65]) {
+void sha512(uchar *input, uchar output[64]) {
 	SHA512_CTX shactx;
 	SHA512_Init(&shactx);
 	SHA512_Update(&shactx, input, INPUTINT);
 	SHA512_Final(output, &shactx);
-	output[64] = 0;
 }
 
 int main() {
@@ -29,7 +28,7 @@ int main() {
 	}
 	uchar randbyte[1];
 	uchar rawBytes[INPUTINT];
-	uchar bytes2[65];
+	uchar bytes2[64];
 	int n;
 	for (int x=0; x<4096/64; x++) {
 		for (int i=0; i<INPUTINT; i++) {
@@ -42,7 +41,9 @@ int main() {
 			}
 		}
 		sha512(rawBytes, bytes2);
-		printf("%s", bytes2);
+		for (int i=0; i<64; i++) {
+			fputc(bytes2[i], stdout);
+		}
 	}
 	serialport_close(sfd);
 }

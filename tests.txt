@@ -1,0 +1,108 @@
+Single-AES mode:
+	ent:
+	Entropy = 7.999805 bits per byte.
+
+	Optimum compression would reduce the size
+	of this 1048576 byte file by 0 percent.
+
+	Chi square distribution for 1048576 samples is 283.53, and randomly
+	would exceed this value 10.60 percent of the times.
+
+	Arithmetic mean value of data bytes is 127.4668 (127.5 = random).
+	Monte Carlo value for Pi is 3.144321992 (error 0.09 percent).
+	Serial correlation coefficient is -0.000272 (totally uncorrelated = 0.0).
+
+	time:
+	real	0m1.804s
+	user	0m0.008s
+	sys	0m0.020s
+
+	real	0m1.804s
+	user	0m0.016s
+	sys	0m0.012s
+
+	real	0m1.804s
+	user	0m0.000s
+	sys	0m0.028s
+
+Double-AES mode:
+	ent:
+	Entropy = 7.999826 bits per byte.
+
+	Optimum compression would reduce the size
+	of this 1048576 byte file by 0 percent.
+
+	Chi square distribution for 1048576 samples is 252.47, and randomly
+	would exceed this value 53.30 percent of the times.
+
+	Arithmetic mean value of data bytes is 127.4608 (127.5 = random).
+	Monte Carlo value for Pi is 3.142559595 (error 0.03 percent).
+	Serial correlation coefficient is -0.001541 (totally uncorrelated = 0.0).
+
+	time:
+	real	0m1.804s
+	user	0m0.000s
+	sys	0m0.028s
+
+	real	0m1.802s
+	user	0m0.012s
+	sys	0m0.016s
+
+	real	0m1.805s
+	user	0m0.008s
+	sys	0m0.020s
+
+Double-AES-Long mode:
+	ent:
+	Entropy = 7.999815 bits per byte.
+
+	Optimum compression would reduce the size
+	of this 1048576 byte file by 0 percent.
+
+	Chi square distribution for 1048576 samples is 268.39, and randomly
+	would exceed this value 27.01 percent of the times.
+
+	Arithmetic mean value of data bytes is 127.5635 (127.5 = random).
+	Monte Carlo value for Pi is 3.138393930 (error 0.10 percent).
+	Serial correlation coefficient is 0.000563 (totally uncorrelated = 0.0).
+
+	time:
+	real	0m1.280s
+	user	0m0.016s
+	sys	0m0.004s
+
+	real	0m1.281s
+	user	0m0.012s
+	sys	0m0.008s
+
+	real	0m1.280s
+	user	0m0.004s
+	sys	0m0.016s
+
+SHA-512 mode:
+	ent:
+	Entropy = 7.999705 bits per byte.
+
+	Optimum compression would reduce the size
+	of this 527612 byte file by 0 percent.
+
+	Chi square distribution for 527612 samples is 215.36, and randomly
+	would exceed this value 96.61 percent of the times.
+
+	Arithmetic mean value of data bytes is 127.5662 (127.5 = random).
+	Monte Carlo value for Pi is 3.143139819 (error 0.05 percent).
+	Serial correlation coefficient is -0.001233 (totally uncorrelated = 0.0).
+
+	time:
+	real	0m2.402s
+	user	0m0.008s
+	sys	0m0.028s
+
+	real	0m2.402s
+	user	0m0.000s
+	sys	0m0.028s
+
+	real	0m2.403s
+	user	0m0.000s
+	sys	0m0.036s
+
